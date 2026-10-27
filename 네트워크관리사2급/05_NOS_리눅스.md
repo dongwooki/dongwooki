@@ -1,7 +1,7 @@
 # 05. NOS ② Linux
 
 > **과목:** NOS (Network Operating System)
-> **출제 비중 체감:** ★★★★☆ (NOS 과목 중 절반 가까이가 리눅스. 명령어·권한·설정 파일은 거의 매 회 출제)
+> **출제 비중 체감:** ★★★★☆ (NOS 과목 중 절반 가까이가 리눅스. 명령어·권한·설정 파일은 거의 매회 출제)
 > **목표 공부시간:** 3~4시간 (본문 2.5시간 + 연습문제 1시간)
 
 ---
@@ -54,7 +54,7 @@
 | **가상 메모리(스왑) 지원** | 물리 메모리가 부족하면 디스크의 swap 영역을 메모리처럼 사용 |
 | **계층적 파일 구조** | 최상위 `/`(루트)에서 시작하는 트리 구조 |
 | **모듈 방식 커널** | 모놀리식 커널이지만 필요한 기능(드라이버)을 모듈로 동적 적재 가능 (`lsmod`, `modprobe`, `insmod`, `rmmod`) |
-| **이식성** | 대부분 C 언어로 작성되어 다양한 하드웨어로 이식 쉬움 |
+| **이식성** | 대부분 C 언어로 작성되어 다양한 하드웨어로 이식이 쉬움 |
 
 > 💡 시험 포인트: "리눅스의 특징으로 옳지 **않은** 것" — "소스 비공개", "단일 사용자", "특정 하드웨어 전용" 같은 선지가 오답으로 나온다.
 
@@ -128,7 +128,7 @@
 
 ## 4. 디렉터리 구조 (FHS: Filesystem Hierarchy Standard)
 
-리눅스는 윈도우처럼 C:, D: 드라이브가 있는 게 아니라, **최상위 루트 디렉터리 `/` 하나에서 모든 것이 뻗어나가는 트리 구조**다. 다른 디스크도 특정 디렉터리에 "마운트(연결)"해서 쓴다.
+리눅스에는 윈도우의 C:, D: 같은 드라이브 구분이 없다. **최상위 루트 디렉터리 `/` 하나에서 모든 것이 뻗어 나가는 트리 구조**다. 다른 디스크도 특정 디렉터리에 "마운트(연결)"해서 쓴다.
 
 | 디렉터리 | 용도 | 기억법 |
 |---|---|---|
@@ -144,7 +144,7 @@
 | `/tmp` | **임시 파일**. 누구나 쓰기 가능 (Sticky Bit 설정) | temporary |
 | `/usr` | 사용자 프로그램, 라이브러리, 문서 (/usr/bin, /usr/local …) | Unix System Resources |
 | `/var` | **내용이 자주 바뀌는(가변) 파일**: 로그(/var/log), 메일 스풀, 프린터 스풀, 웹 문서(/var/www) | **var**iable |
-| `/proc` | **가상 파일시스템**. 커널·프로세스 정보를 메모리에서 보여줌 (/proc/cpuinfo, /proc/meminfo). 디스크에 실제 저장 X | **proc**ess |
+| `/proc` | **가상 파일시스템**. 커널·프로세스 정보를 메모리에서 보여줌 (/proc/cpuinfo, /proc/meminfo). 디스크에 실제로 저장되지 않음 | **proc**ess |
 | `/mnt` | 임시 마운트 지점 | mount |
 | `/media` | CD-ROM, USB 등 이동식 장치 자동 마운트 지점 | media |
 | `/opt` | 추가 설치하는 **응용 프로그램(패키지)** | **opt**ional |
@@ -162,7 +162,7 @@
 |---|---|---|
 | `pwd` | 현재 작업 디렉터리 출력 (print working directory) | |
 | `cd` | 디렉터리 이동 | `cd ~` 홈, `cd ..` 상위, `cd -` 직전 위치, `cd /` 루트 |
-| `ls` | 목록 보기 | `-a` 숨김 파일(.으로 시작) 포함, `-l` 자세히, `-R` 하위까지, `-h` 크기 사람이 읽기 쉽게, `-t` 수정 시간순, `-i` inode 번호, `-d` 디렉터리 자체 정보 |
+| `ls` | 목록 보기 | `-a` 숨김 파일(.으로 시작) 포함, `-l` 자세히, `-R` 하위까지, `-h` 크기를 읽기 쉬운 단위로, `-t` 수정 시간순, `-i` inode 번호, `-d` 디렉터리 자체 정보 |
 
 ### 5-2. 생성·복사·이동·삭제
 
@@ -213,7 +213,7 @@
 
 ---
 
-## 6. 파일 권한 (가장 많이 나오는 파트!)
+## 6. 파일 권한 (가장 많이 나오는 부분)
 
 ### 6-1. ls -l 출력 읽기
 
@@ -313,7 +313,7 @@ chgrp dev file.txt          # 그룹만 dev로
 
 - `umask` : 현재 값 확인 / `umask 027` : 값 변경
 - root의 기본 umask는 보통 **022**.
-- 정확히는 "빼기"가 아니라 umask 비트를 **제거(마스킹)** 하는 것이지만, 시험 수준에서는 빼기로 계산하면 된다. (예외: 파일에 umask 033처럼 홀수 자리가 있으면 666-033=633이 아니라 644. 시험에선 거의 안 나옴)
+- 정확히는 "빼기"가 아니라 umask 비트를 **제거(마스킹)** 하는 것이지만, 시험 수준에서는 빼기로 계산하면 된다. (예외: 파일에 umask 033처럼 홀수 자리가 있으면 666-033=633이 아니라 644. 시험에는 거의 나오지 않음)
 
 ### 6-6. 특수 권한 (SetUID / SetGID / Sticky Bit)
 
@@ -390,7 +390,7 @@ dev:x:1100:kim,lee
 | `useradd` | 사용자 생성 | `-d` 홈 디렉터리 지정, `-s` 셸 지정, `-g` 기본 그룹, `-G` 보조 그룹, `-u` UID 지정, `-m` 홈 디렉터리 생성, `-e` 만료일 |
 | `usermod` | 사용자 정보 수정 | `-aG dev kim` (dev 그룹에 추가), `-s`, `-d`, `-l`(이름 변경), `-L`(잠금) |
 | `userdel` | 사용자 삭제 | **`-r` 홈 디렉터리와 메일 스풀까지 삭제** |
-| `passwd` | 패스워드 설정/변경 | `passwd kim`(root가 kim 비번 설정), `-l` 잠금, `-u` 잠금 해제, `-d` 비번 삭제 |
+| `passwd` | 패스워드 설정/변경 | `passwd kim`(root가 kim의 비밀번호 설정), `-l` 잠금, `-u` 잠금 해제, `-d` 비밀번호 삭제 |
 | `chage` | 패스워드 만료 정책 변경 | `-l` 정보 확인, `-M` 최대 일수 |
 | `groupadd` / `groupdel` / `groupmod` | 그룹 생성/삭제/수정 | `-g` GID 지정 |
 | `id` | 사용자의 **UID, GID, 소속 그룹** 출력 | `id kim` |
@@ -413,7 +413,7 @@ dev:x:1100:kim,lee
 ## 8. 프로세스 관리
 
 **프로세스** = 실행 중인 프로그램. 각 프로세스는 고유 번호 **PID**를 가진다.
-- **PID 1** = 부팅 시 커널이 가장 먼저 실행하는 프로세스 → 최신 배포판은 **systemd**, 옛날에는 **init**. 모든 프로세스의 조상.
+- **PID 1** = 부팅 시 커널이 가장 먼저 실행하는 프로세스 → 최신 배포판은 **systemd**, 과거에는 **init**. 모든 프로세스의 조상.
 - **데몬(daemon)** = 백그라운드에서 계속 실행되며 요청을 기다리는 서비스 프로세스. 이름이 보통 `d`로 끝남 (httpd, sshd, named, crond …).
 - **부모/자식 프로세스**: 프로세스는 fork로 자식을 만든다. PPID = 부모 PID.
 
@@ -423,12 +423,12 @@ dev:x:1100:kim,lee
 |---|---|
 | `ps` | 현재 프로세스 스냅샷. `ps aux`(BSD 스타일, 모든 사용자 프로세스 상세), `ps -ef`(System V 스타일, PPID 포함 전체 목록) |
 | `top` | **실시간** 프로세스·CPU·메모리 사용량 모니터링 (`q` 종료) |
-| `pstree` | 프로세스 부모-자식 관계를 트리로 |
+| `pstree` | 프로세스의 부모-자식 관계를 트리 형태로 출력 |
 | `pgrep` | 이름으로 PID 찾기 |
 
 ### 8-2. 시그널과 kill
 
-`kill [-시그널] PID` : 프로세스에 시그널을 보낸다. (꼭 "죽이는" 것만이 아니라 신호 전달)
+`kill [-시그널] PID` : 프로세스에 시그널을 보낸다. (프로세스를 종료하는 것뿐 아니라 신호를 전달하는 명령이다.)
 
 | 번호 | 이름 | 의미 |
 |---|---|---|
@@ -480,12 +480,12 @@ renice -5 -p 1234          # 실행 중인 PID 1234의 nice 값을 -5로 변경 
 전원 ON → BIOS/UEFI (POST: 하드웨어 자가진단)
        → 부트로더 GRUB2 (MBR/GPT에서 로드, 커널 선택)
        → 커널 로드 (initramfs로 드라이버 준비, 루트 파일시스템 마운트)
-       → systemd (PID 1) 실행 (옛날: init)
+       → systemd (PID 1) 실행 (과거: init)
        → default.target(런레벨)에 따라 서비스 시작 → 로그인 화면
 ```
 
-- **부트로더**: 커널을 메모리에 올려주는 프로그램. 현재 표준은 **GRUB2**, 과거에는 **LILO**, GRUB(Legacy).
-- GRUB2 설정: `/etc/default/grub` 수정 → `grub2-mkconfig -o /boot/grub2/grub.cfg` 로 반영 (grub.cfg 직접 수정 X).
+- **부트로더**: 커널을 메모리에 올려 주는 프로그램. 현재 표준은 **GRUB2**, 과거에는 **LILO**, GRUB(Legacy).
+- GRUB2 설정: `/etc/default/grub` 수정 → `grub2-mkconfig -o /boot/grub2/grub.cfg` 로 반영한다(grub.cfg는 직접 수정하지 않음).
 
 ### 9-2. 런레벨과 systemd target
 
@@ -559,13 +559,13 @@ runlevel                                   # 현재 런레벨 확인
 | `rpm -qf /경로/파일` | 이 파일이 어느 패키지 소속인지 |
 | `rpm -V 패키지명` | 설치 파일 무결성 검증 |
 
-- rpm은 **의존성을 자동 해결하지 못한다** → 그래서 yum/dnf가 등장.
+- rpm은 **의존성을 자동으로 해결하지 못한다**. 이를 보완하려고 등장한 도구가 yum/dnf다.
 
 ### 10-2. yum / dnf (Red Hat 계열 고수준 도구)
 
 - 인터넷 **저장소(repository)** 에서 패키지를 내려받고 **의존성까지 자동 해결**.
 - 저장소 설정: `/etc/yum.repos.d/*.repo`
-- `dnf`는 yum의 후속 (RHEL 8+, Fedora). 명령 문법 거의 동일.
+- `dnf`는 yum의 후속 도구(RHEL 8 이후, Fedora)이며 명령 문법은 거의 같다.
 
 ```bash
 yum install httpd     # 설치
@@ -598,7 +598,7 @@ yum info httpd        # 정보
 
 | 파일시스템 | 특징 |
 |---|---|
-| **ext2** | 리눅스 전통 파일시스템. **저널링 기능 없음** → 비정상 종료 시 fsck 검사 오래 걸림 |
+| **ext2** | 리눅스 전통 파일시스템. **저널링 기능 없음** → 비정상 종료 시 fsck 검사가 오래 걸림 |
 | **ext3** | ext2 + **저널링(Journaling)** 추가. ext2와 호환 |
 | **ext4** | ext3 개선. 대용량 파일·볼륨 지원, extent 방식, 빠른 fsck. 많은 배포판의 기본 |
 | **xfs** | 고성능 64비트 저널링 파일시스템. **RHEL/CentOS 7 이후 기본** |
@@ -616,7 +616,7 @@ yum info httpd        # 정보
 | `/dev/sda` | 첫 번째 SATA/SCSI/USB 디스크 |
 | `/dev/sdb` | 두 번째 디스크 |
 | `/dev/sda1` | 첫 번째 디스크의 **첫 번째 파티션** |
-| `/dev/hda` | (옛날) 첫 번째 IDE 디스크 |
+| `/dev/hda` | (과거) 첫 번째 IDE 디스크 |
 | `/dev/nvme0n1p1` | 첫 NVMe SSD의 첫 파티션 |
 | `/dev/cdrom`, `/dev/sr0` | CD/DVD |
 
@@ -670,9 +670,9 @@ yum info httpd        # 정보
 
 ## 12. 압축과 아카이브
 
-- **아카이브(묶기)**: 여러 파일을 하나로 묶기만 함 (크기 안 줄어듦) → **tar**
+- **아카이브(묶기)**: 여러 파일을 하나로 묶기만 함(크기는 줄지 않음) → **tar**
 - **압축**: 크기를 줄임 → **gzip, bzip2, xz** (보통 파일 하나만 압축)
-- 그래서 리눅스는 "tar로 묶고 → gzip으로 압축" = `.tar.gz` (`.tgz`)
+- 그래서 리눅스에서는 tar로 묶은 뒤 gzip으로 압축한 `.tar.gz`(`.tgz`) 형식을 많이 쓴다.
 
 ### 12-1. tar 옵션
 
@@ -718,7 +718,7 @@ tar Jxvf backup.tar.xz            # xz
 ```
             i, a, o 등
  [명령 모드] ─────────→ [입력 모드]
-  (일반모드)  ←───────── (텍스트 입력)
+  (일반 모드) ←───────── (텍스트 입력)
      │           ESC
      │ :  (콜론)
      ↓
@@ -764,7 +764,7 @@ tar Jxvf backup.tar.xz            # xz
 | `:w` | 저장 |
 | `:q` | 종료 (변경 사항 있으면 거부) |
 | `:q!` | **저장하지 않고 강제 종료** |
-| `:wq` / `:x` / (명령모드) `ZZ` | **저장 후 종료** |
+| `:wq` / `:x` / (명령 모드) `ZZ` | **저장 후 종료** |
 | `:w 새이름` | 다른 이름으로 저장 |
 | `:set nu` (`:set number`) | 줄 번호 표시, `:set nonu` 해제 |
 | `:%s/old/new/g` | 파일 전체에서 old를 new로 **치환** |
@@ -793,7 +793,7 @@ tar Jxvf backup.tar.xz            # xz
 | `2>&1` | 에러를 표준 출력과 같은 곳으로 | `cmd > all.txt 2>&1` |
 | `&>` | 표준 출력 + 에러 모두 | `cmd &> all.txt` |
 | `\|` | **파이프**: 앞 명령의 출력을 뒤 명령의 입력으로 | `ps aux \| grep httpd`, `cat /etc/passwd \| wc -l` |
-| `/dev/null` | 출력 버리는 "블랙홀" 장치 | `cmd > /dev/null 2>&1` |
+| `/dev/null` | 출력을 버리는 "블랙홀" 장치 | `cmd > /dev/null 2>&1` |
 
 > 💡 시험 포인트: `>`(덮어쓰기) vs `>>`(추가), `2>`(에러), `|`(파이프).
 
@@ -804,7 +804,7 @@ tar Jxvf backup.tar.xz            # xz
 ### 15-1. cron — **반복** 예약
 
 - 데몬: `crond`
-- `crontab -e` 편집 / `crontab -l` 목록 / `crontab -r` 삭제 / `crontab -u kim -e` 다른 사용자(root)
+- `crontab -e` 편집 / `crontab -l` 목록 / `crontab -r` 삭제 / `crontab -u kim -e` 다른 사용자의 crontab 편집(root만)
 - 시스템 전체: `/etc/crontab` (사용자 필드가 하나 더 있음), `/etc/cron.d/`, `/etc/cron.daily/` 등
 - 사용 허가/거부: `/etc/cron.allow`, `/etc/cron.deny`
 
@@ -820,7 +820,7 @@ tar Jxvf backup.tar.xz            # xz
 | `*` | 매(모든 값) |
 | `,` | 여러 값 (1,15) |
 | `-` | 범위 (1-5) |
-| `/` | 간격 (*/10 = 10마다) |
+| `/` | 간격 (*/10 = 10 단위마다) |
 
 | 예시 | 의미 |
 |---|---|
@@ -875,8 +875,8 @@ tar Jxvf backup.tar.xz            # xz
 
 | 명령 | 기능 |
 |---|---|
-| `ifconfig` | (구식, net-tools) 인터페이스 IP 확인·설정. `ifconfig eth0 192.168.1.10 netmask 255.255.255.0 up` |
-| `ip addr show` (`ip a`) | (신식, iproute2) **IP 주소 확인** |
+| `ifconfig` | (이전 방식, net-tools) 인터페이스 IP 확인·설정. `ifconfig eth0 192.168.1.10 netmask 255.255.255.0 up` |
+| `ip addr show` (`ip a`) | (현재 방식, iproute2) **IP 주소 확인** |
 | `ip addr add 192.168.1.10/24 dev eth0` | IP 추가 |
 | `ip link set eth0 up/down` | 인터페이스 활성/비활성 |
 | `ifup eth0` / `ifdown eth0` | 인터페이스 켜기/끄기 |
@@ -938,7 +938,7 @@ tar Jxvf backup.tar.xz            # xz
 | `ssh-copy-id kim@host` | 공개키를 원격 서버의 `~/.ssh/authorized_keys`에 등록 |
 | `sftp kim@host` | SSH 기반 대화형 파일 전송 |
 
-- telnet, rlogin, rsh 등은 **평문 전송**이라 보안상 ssh로 대체.
+- telnet, rlogin, rsh 등은 **평문 전송**이라 보안을 위해 ssh로 대체한다.
 
 > 💡 시험 포인트: "원격 서버에 암호화된 채널로 파일을 복사하는 명령" → **scp**.
 
@@ -960,7 +960,7 @@ tar Jxvf backup.tar.xz            # xz
 - /etc/passwd 7필드: **이름:x:UID:GID:설명:홈:셸**, root UID = **0**.
 - 암호화된 비밀번호 = **/etc/shadow**, 그룹 = /etc/group, 신규 사용자 기본 파일 = **/etc/skel**, 계정 기본 정책 = **/etc/login.defs**.
 - `userdel -r` = 홈 디렉터리까지 삭제, `usermod -aG` = 보조 그룹 추가, `id` = UID/GID/그룹 확인.
-- `su -` = 대상 사용자 환경까지 전환(대상 비번), `sudo` = 명령 단위 root 실행(내 비번, /etc/sudoers).
+- `su -` = 대상 사용자 환경까지 전환(대상의 비밀번호), `sudo` = 명령 단위 root 실행(내 비밀번호, /etc/sudoers).
 - kill 기본 = **15(SIGTERM)**, 강제 = **9(SIGKILL)**, 설정 재읽기 = **1(SIGHUP)**, Ctrl+C = 2.
 - nice **-20(최고) ~ 19(최저)**, 기본 0, 음수 설정은 root만. 실행 중 변경 = `renice`.
 - `&` 백그라운드, `jobs`, `fg`, `bg`, `nohup`(로그아웃 후에도 실행), PID 1 = **systemd**.
@@ -972,11 +972,11 @@ tar Jxvf backup.tar.xz            # xz
 - fstab 6필드: **장치 / 마운트포인트 / 종류 / 옵션 / dump / fsck순서**.
 - `df` = 파티션별 사용량, `du` = 디렉터리 사용량, `umount`(n 없음).
 - tar: `c` 묶기, `x` 풀기, `t` 목록, `z` gzip, `j` bzip2, `J` xz, `f` 파일명 → `tar zxvf a.tar.gz`.
-- vi 3모드: 명령 / 입력 / 라스트라인. `i`앞 `a`뒤 `o`아래줄, `dd` 줄삭제, `yy` 줄복사, `p` 붙여넣기, `:q!` 강제종료, `:wq` 저장종료, `/` 검색, `:set nu`.
+- vi 3모드: 명령 / 입력 / 라스트 라인. `i` 앞, `a` 뒤, `o` 아랫줄, `dd` 줄 삭제, `yy` 줄 복사, `p` 붙여넣기, `:q!` 강제 종료, `:wq` 저장 후 종료, `/` 검색, `:set nu`.
 - `>` 덮어쓰기, `>>` 추가, `2>` 에러, `|` 파이프.
 - crontab: **분 시 일 월 요일**, 요일 0(7)=일요일. cron 반복 / at 1회.
 - /var/log/**messages** 일반, /var/log/**secure** 인증, `last`(wtmp), `lastb`(btmp 실패), `dmesg` 커널, `journalctl` systemd.
-- **/etc/hosts** 로컬 이름매핑, **/etc/resolv.conf** DNS 서버 주소, **/etc/services** 서비스–포트.
+- **/etc/hosts** 로컬 이름 매핑, **/etc/resolv.conf** DNS 서버 주소, **/etc/services** 서비스–포트.
 - 설정 파일: Apache **httpd.conf**, Samba **smb.conf**, NFS **/etc/exports**, BIND **named.conf**, SSH **sshd_config**, FTP **vsftpd.conf**.
 - Samba = 윈도우와 공유(SMB/CIFS), NFS = 유닉스끼리 공유.
 
@@ -988,7 +988,7 @@ tar Jxvf backup.tar.xz            # xz
 |---|---|
 | `/root` vs `/` | `/`는 최상위 루트 디렉터리, `/root`는 root **사용자의 홈** |
 | `/bin` vs `/sbin` | bin = 일반 사용자 명령, sbin = **시스템 관리자** 명령 |
-| `/etc/passwd` vs `/etc/shadow` | passwd엔 `x`만, **실제 암호화 비번은 shadow** (root만 읽기) |
+| `/etc/passwd` vs `/etc/shadow` | passwd에는 `x`만 있고, **실제 암호화된 비밀번호는 shadow**에 있음(root만 읽기) |
 | `/etc/hosts` vs `/etc/resolv.conf` | hosts = **이름↔IP 직접 매핑**, resolv.conf = **DNS 서버 주소** |
 | `find` vs `grep` | find = 파일 **이름/속성**, grep = 파일 **내용** |
 | `which` vs `whereis` | which = 실행 파일 경로만, whereis = 실행·소스·**man 페이지**까지 |
@@ -999,7 +999,7 @@ tar Jxvf backup.tar.xz            # xz
 | nice 값 크기 | **작을수록 우선순위 높음**. 범위 -20~19 (0~99 아님!) |
 | umask 계산 | 디렉터리는 777에서, **파일은 666에서** 뺀다 |
 | SetUID vs SetGID 표시 | 둘 다 `s`! **소유자 자리면 SetUID**, 그룹 자리면 SetGID. Sticky만 `t` |
-| `s` vs `S` | 소문자 = 특수권한 + 실행권한 있음, 대문자 = 실행권한 없음 |
+| `s` vs `S` | 소문자 = 특수 권한 + 실행 권한 있음, 대문자 = 실행 권한 없음 |
 | 하드 링크 vs 심볼릭 링크 | 같은 inode = 하드, 원본 지우면 깨지는 것 = 심볼릭 |
 | ext2 vs ext3 | **저널링 유무** (ext2 없음) |
 | fstab 5번째 vs 6번째 필드 | 5 = **dump(백업)**, 6 = **fsck 순서** |
@@ -1020,12 +1020,12 @@ tar Jxvf backup.tar.xz            # xz
 ## 🧠 암기 팁
 
 - **권한 숫자 "4-2-1 읽쓰실"** : **r**ead 4, **w**rite 2, e**x**ecute 1 → "읽(4)고 쓰(2)고 실행(1)".
-- **특수권한 "4UID-2GID-1스티키"** : "**사(4)용자 이(2)그룹 일(1)스티키**" → SetUID 4, SetGID 2, Sticky 1. 위치도 순서대로 소유자 / 그룹 / 기타.
+- **특수 권한 "4UID-2GID-1스티키"** : "**사(4)용자 이(2)그룹 일(1)스티키**" → SetUID 4, SetGID 2, Sticky 1. 위치도 순서대로 소유자 / 그룹 / 기타.
 - **/etc/passwd 7필드** : "**이 x U G 설 홈 셸**" (이름, x, UID, GID, 설명, 홈, 셸) — "이엑스 유지 설홈셸".
 - **fstab 6필드** : "**장 마 종 옵 덤 검**" (장치, 마운트, 종류, 옵션, 덤프, 검사) — "장마철 종옵(좀) 덤검".
 - **crontab 5필드** : "**분 시 일 월 요**" — "분시일월요" = 작은 단위 → 큰 단위 → 요일.
 - **nice** : "착할(nice)수록 양보한다" → 값이 클수록 우선순위 **낮음**.
-- **kill 9** : "구(9)사일생 없음, 무조건 죽음" / **15**는 "일오(15)… 정중하게 종료 요청".
+- **kill 9** : "구(9)사일생 없이 무조건 종료" / **15**는 "일오(15)… 정중하게 종료 요청".
 - **런레벨** : "**0 끄기, 1 혼자, 3 텍스트, 5 그림, 6 다시**".
 - **tar 옵션** : "**c**reate · e**x**tract · lis**t** / **z**=gzip, **j**=bzip2(**j**는 b 다음…), **f**는 file 이름은 맨 뒤".
 - **df/du** : "**f**ree(파티션 남은 공간) / **u**sage(디렉터리 사용량)".
@@ -1209,7 +1209,7 @@ find / -name a.txt ( ) error.log
 | 문항 | 정답 | 해설 |
 |---|---|---|
 | 리눅스-01 | ④ | 리눅스는 GPL 오픈소스로 커널 소스가 **공개**되어 누구나 드라이버·기능을 개발할 수 있다. ①②③은 리눅스의 대표 특징. |
-| 리눅스-02 | ① | **bash**(Bourne Again Shell)는 sh를 확장한 GNU 셸로 대부분 배포판 기본 셸. csh는 C 언어 유사 문법, ksh는 Korn 셸, tcsh는 csh 개선판. |
+| 리눅스-02 | ① | **bash**(Bourne Again Shell)는 sh를 확장한 GNU 셸로 대부분 배포판의 기본 셸. csh는 C 언어 유사 문법, ksh는 Korn 셸, tcsh는 csh 개선판. |
 | 리눅스-03 | ② | **/sbin** = system binaries(관리자용 명령). /bin은 일반 사용자도 쓰는 기본 명령(ls, cp 등), /dev는 장치 파일, /opt는 추가 응용 프로그램 설치 위치. |
 | 리눅스-04 | ① | 7=rwx(4+2+1), 5=r-x(4+1), 4=r-- → **rwxr-xr--**. ②는 755, ③은 764, ④는 654. |
 | 리눅스-05 | ③ | 디렉터리 기본 최대 권한 777 − 027 = **750**. 640은 같은 umask에서 **파일**의 권한(666−027 → 640). |
@@ -1222,7 +1222,7 @@ find / -name a.txt ( ) error.log
 | 리눅스-12 | ③ | **9번 SIGKILL**은 프로세스가 무시할 수 없는 강제 종료. 1(SIGHUP)=재시작/설정 재읽기, 2(SIGINT)=Ctrl+C, 15(SIGTERM)=kill 기본값인 정상 종료 요청. |
 | 리눅스-13 | ① | nice 범위 **-20~19**, 값이 작을수록 우선순위 높음. 0~99는 아님, 음수 설정은 **root만** 가능, 실행 중인 프로세스는 **renice**로 변경 가능. |
 | 리눅스-14 | ④ | 런레벨 2·3·4 → **multi-user.target**. graphical=5, rescue=1, reboot=6. |
-| 리눅스-15 | ② | **enable** = 부팅 시 자동 시작 등록. start는 지금 시작(재부팅 후 유지 X), status는 상태 확인, reload는 설정 다시 읽기. |
+| 리눅스-15 | ② | **enable** = 부팅 시 자동 시작 등록. start는 지금 시작(재부팅하면 유지되지 않음), status는 상태 확인, reload는 설정 다시 읽기. |
 | 리눅스-16 | ④ | `rpm -qa` = query all, 설치된 전체 목록. -ivh 설치, -e 삭제, -Uvh 업그레이드. |
 | 리눅스-17 | ① | Ubuntu는 Debian 계열이므로 **apt/dpkg** 사용. yum은 Red Hat 계열(CentOS 7 등) 도구. Rocky Linux는 dnf, Debian은 apt가 맞다. |
 | 리눅스-18 | ③ | fstab 필드: 장치 / 마운트포인트 / 종류 / 옵션 / **dump** / fsck 순서 → 5번째는 **dump 백업 여부**. 6번째 `2`가 fsck 검사 순서. |
@@ -1230,7 +1230,7 @@ find / -name a.txt ( ) error.log
 | 리눅스-20 | ④ | `z`(gzip) + `x`(extract) + `v` + `f` → **tar -zxvf**. -cvf는 묶기, -tvf는 목록 보기, -zcvf는 gzip으로 묶어 압축 생성. |
 | 리눅스-21 | ③ | **:set nu**(number) = 행 번호 표시, `:set nonu`로 해제. :set list는 탭·줄 끝 같은 제어 문자 표시, :wq는 저장 후 종료, :%s/a/b/g는 파일 전체에서 a를 b로 치환. |
 | 리눅스-22 | ① | 첫 번째 필드(분)의 **`*/10` = 10분 간격**(0, 10, 20 … 50분). 매시 10분은 `10 * * * *`, 매일 10시는 `0 10 * * *`, 매월 10일은 `0 0 10 * *`. |
-| 리눅스-23 | ② | 파일 디스크립터 **2 = 표준 에러(stderr)** → `2>`로 오류만 파일에 저장. `>`(=1>)는 표준 출력, `<`는 입력, `|`는 파이프. (출력+오류 모두 저장은 `> 파일 2>&1`) |
+| 리눅스-23 | ② | 파일 디스크립터 **2 = 표준 에러(stderr)** → `2>`로 오류만 파일에 저장. `>`(=1>)는 표준 출력, `<`는 입력, `\|`는 파이프. (출력+오류 모두 저장은 `> 파일 2>&1`) |
 | 리눅스-24 | ③ | 하드 링크는 원본과 **같은 inode**를 공유한다. 하드 링크는 다른 파일시스템에 만들 수 없고(①×), 심볼릭 링크는 원본 삭제 시 깨지며(②×), 생성 옵션은 `ln -s`(④×). |
 | 리눅스-25 | ④ | BIND(DNS)의 설정 파일은 **/etc/named.conf**. sshd_config는 SSH 서버(sshd) 설정 파일. |
 
