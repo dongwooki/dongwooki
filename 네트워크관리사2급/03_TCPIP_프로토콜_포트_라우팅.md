@@ -986,12 +986,12 @@ PC가 켜질 때 **IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS �
 
 ---
 
-**[프로토콜-04]** ICMP 메시지 타입(Type) 번호와 메시지 이름의 연결이 옳지 **않은** 것은?
+**[프로토콜-04]** ICMP 메시지 중 **오류 보고(Error-Reporting)** 메시지에 해당하지 **않는** 것은?
 
-① 0 – Echo Reply
-② 3 – Destination Unreachable
-③ 8 – Time Exceeded
-④ 5 – Redirect
+① Destination Unreachable
+② Time Exceeded
+③ Echo Request
+④ Parameter Problem
 
 ---
 
@@ -1004,12 +1004,12 @@ PC가 켜질 때 **IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS �
 
 ---
 
-**[프로토콜-06]** OSPF 라우팅 프로토콜에 대한 설명으로 옳지 **않은** 것은?
+**[프로토콜-06]** RIPv2가 RIPv1과 비교하여 추가·개선된 특징이 **아닌** 것은?
 
-① 링크 상태(Link State) 라우팅 프로토콜이다.
-② 여러 영역(Area)으로 나눌 경우 Area 0이 백본 영역 역할을 한다.
-③ 경유하는 라우터의 수(홉 수)만을 메트릭으로 사용하므로 최대 15홉까지만 지원한다.
-④ 네트워크 변화가 생기면 LSA를 전송하고 다익스트라(SPF) 알고리즘으로 최단 경로를 계산한다.
+① 라우팅 업데이트에 서브넷 마스크 정보를 포함하여 VLSM(클래스리스)을 지원한다.
+② 업데이트를 브로드캐스트 대신 멀티캐스트(224.0.0.9)로 전송한다.
+③ 최대 홉 수를 255로 확장하여 대규모 네트워크를 지원한다.
+④ 라우팅 업데이트에 대한 인증 기능을 지원한다.
 
 ---
 
@@ -1022,30 +1022,30 @@ PC가 켜질 때 **IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS �
 
 ---
 
-**[프로토콜-08]** TCP의 3-Way Handshake 연결 설정 과정을 순서대로 바르게 나열한 것은? (클라이언트가 연결을 시작한다고 가정)
+**[프로토콜-08]** 클라이언트가 순서 번호(Sequence Number) **1000**으로 SYN 세그먼트를 보냈다. 서버가 응답으로 보내는 SYN+ACK 세그먼트의 확인 응답 번호(Acknowledgment Number)는?
 
-① 클라이언트 SYN+ACK → 서버 SYN → 클라이언트 ACK
-② 클라이언트 SYN → 서버 ACK → 클라이언트 FIN
-③ 클라이언트 ACK → 서버 SYN+ACK → 클라이언트 SYN
-④ 클라이언트 SYN → 서버 SYN+ACK → 클라이언트 ACK
-
----
-
-**[프로토콜-09]** Windows 클라이언트에서 DNS 서버의 레코드를 변경했는데도 이전 IP 주소로 계속 접속되는 문제가 있다. 로컬에 저장된 DNS 확인자 캐시를 삭제하기 위해 사용하는 명령어는?
-
-① ipconfig /release
-② ipconfig /flushdns
-③ ipconfig /displaydns
-④ nslookup
+① 999
+② 1000
+③ 0
+④ 1001
 
 ---
 
-**[프로토콜-10]** UDP 헤더를 구성하는 필드가 **아닌** 것은?
+**[프로토콜-09]** DHCP로 IP 주소를 할당받은 Windows PC에서 현재 IP 주소를 DHCP 서버에 반납한 뒤 새로 할당받으려고 한다. 순서대로 입력할 명령으로 옳은 것은?
 
-① Source Port
-② Length
-③ Checksum
-④ Acknowledgment Number
+① ipconfig /flushdns → ipconfig /registerdns
+② ipconfig /release → ipconfig /renew
+③ ipconfig /renew → ipconfig /release
+④ ipconfig /all → ipconfig /displaydns
+
+---
+
+**[프로토콜-10]** UDP 헤더의 **Length** 필드가 나타내는 값으로 옳은 것은?
+
+① UDP 데이터(페이로드)만의 길이
+② IP 헤더를 포함한 전체 패킷의 길이
+③ UDP 헤더만의 길이
+④ UDP 헤더와 데이터를 합한 UDP 데이터그램 전체 길이
 
 ---
 
@@ -1067,12 +1067,12 @@ PC가 켜질 때 **IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS �
 
 ---
 
-**[프로토콜-13]** Windows 명령 프롬프트에서 `netstat` 명령어로 라우팅 테이블을 출력하려고 할 때 사용하는 옵션은?
+**[프로토콜-13]** Windows 명령 프롬프트에서 IP 주소와 MAC 주소의 대응 정보가 저장된 **ARP 캐시 테이블**을 확인하는 명령어는?
 
-① -a
-② -n
-③ -s
-④ -r
+① netstat -r
+② route print
+③ ipconfig /all
+④ arp -a
 
 ---
 
@@ -1094,12 +1094,12 @@ PC가 켜질 때 **IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS �
 
 ---
 
-**[프로토콜-16]** 다음 중 전송 계층 프로토콜로 UDP를 사용하는 서비스로만 짝지어진 것은?
+**[프로토콜-16]** DNS는 일반적인 이름 질의·응답에 UDP 53번을 사용한다. DNS가 **TCP 53번**을 사용하는 대표적인 경우는?
 
-① FTP, Telnet
-② SNMP, TFTP
-③ SMTP, HTTP
-④ SSH, POP3
+① 클라이언트가 자신의 DNS 캐시를 조회할 때
+② 주 DNS 서버와 보조 DNS 서버 간의 영역 전송(Zone Transfer)
+③ DNS 서버가 루트 힌트 파일을 읽어 들일 때
+④ 역방향(PTR) 조회를 할 때
 
 ---
 
@@ -1139,12 +1139,12 @@ PC가 켜질 때 **IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS �
 
 ---
 
-**[프로토콜-21]** SNMP에 대한 설명으로 옳지 **않은** 것은?
+**[프로토콜-21]** SNMP 메시지 중 **매니저(Manager)가 에이전트(Agent)의 MIB 객체 값을 변경**하기 위해 보내는 메시지는?
 
-① 에이전트(Agent)는 관리 대상 장비의 정보를 MIB 형태로 유지한다.
-② Trap은 에이전트가 특정 이벤트 발생 시 매니저의 요청 없이 매니저에게 알리는 메시지이다.
-③ 신뢰성 있는 전달을 위해 TCP 161번과 162번 포트로 연결을 맺어 통신한다.
-④ SNMPv3는 사용자 인증과 메시지 암호화 등 보안 기능이 강화되었다.
+① GetRequest
+② GetNextRequest
+③ SetRequest
+④ Trap
 
 ---
 
@@ -1191,24 +1191,24 @@ PC가 켜질 때 **IP 주소, 서브넷 마스크, 기본 게이트웨이, DNS �
 | 프로토콜-01 | ④ | UDP는 TCP와 함께 **전송 계층** 프로토콜. IP·ICMP·IGMP(그리고 ARP·RARP)는 인터넷 계층. |
 | 프로토콜-02 | ③ | ARP **응답은 요청한 호스트에게만 유니캐스트**로 보낸다. 요청만 브로드캐스트. ①②④는 옳은 설명. |
 | 프로토콜-03 | ② | **RARP = MAC→IP**, 디스크 없는(Diskless) 워크스테이션용. ARP는 IP→MAC, IGMP는 멀티캐스트 그룹 관리, ICMP는 오류·제어 메시지. |
-| 프로토콜-04 | ③ | Type **8은 Echo Request**(ping 요청). Time Exceeded는 **Type 11**. 0·3·5는 올바른 연결. |
+| 프로토콜-04 | ③ | ICMP 메시지는 **오류 보고**(Destination Unreachable, Time Exceeded, Parameter Problem, Redirect 등)와 **질의**(Echo Request/Reply, Timestamp 등)로 나뉜다. Echo Request는 ping이 보내는 **질의** 메시지. |
 | 프로토콜-05 | ② | TTL이 0이 되어 폐기되면 라우터가 **ICMP Time Exceeded(Type 11)**를 회신 → tracert는 이것으로 각 홉을 알아낸다. Echo Reply는 목적지 응답, Redirect는 더 나은 경로 안내, Source Quench는 폐기된 흐름 제어 메시지. |
-| 프로토콜-06 | ③ | 홉 수만 메트릭으로 쓰고 15홉 제한이 있는 것은 **RIP**. OSPF는 **대역폭 기반 코스트**를 쓰고 홉 제한이 없어 대규모 망에 적합. ①②④는 OSPF의 올바른 특징. |
+| 프로토콜-06 | ③ | RIPv2도 **최대 홉 수는 15**(16 = 도달 불가)로 RIPv1과 같다. ①(서브넷 마스크 전달·VLSM), ②(224.0.0.9 멀티캐스트), ④(인증)는 RIPv2에서 추가된 기능. |
 | 프로토콜-07 | ① | **RST = 강제 연결 재설정(비정상 종료)**. SYN은 연결 시작, FIN은 정상 종료, PSH는 버퍼링 없이 즉시 응용으로 전달. |
-| 프로토콜-08 | ④ | 3-way handshake는 **SYN → SYN+ACK → ACK**. ②의 FIN은 종료용, ①③은 순서가 뒤바뀜. |
-| 프로토콜-09 | ② | **/flushdns = DNS 캐시 삭제**. /release는 DHCP IP 반납, /displaydns는 캐시 내용 보기, nslookup은 DNS 서버에 질의하는 도구(캐시 삭제 기능 없음). |
-| 프로토콜-10 | ④ | UDP 헤더는 **출발지 포트·목적지 포트·길이·체크섬** 4개 필드(8바이트)뿐. 확인 응답 번호는 **TCP** 헤더 필드. |
+| 프로토콜-08 | ④ | ACK 번호 = **다음에 받기를 기대하는 순서 번호**. SYN은 데이터가 없어도 순서 번호 1개를 소비하므로 1000 + 1 = **1001**. |
+| 프로토콜-09 | ② | **/release**(임대 IP 반납) 후 **/renew**(새로 요청). /flushdns는 DNS 캐시 삭제, /registerdns는 DNS 이름 재등록, /all은 상세 설정 보기, /displaydns는 DNS 캐시 보기. |
+| 프로토콜-10 | ④ | UDP Length = **헤더(8바이트) + 데이터**의 전체 길이(바이트 단위, 최소값 8). IP 헤더는 포함하지 않는다. |
 | 프로토콜-11 | ② | 흐름 제어(슬라이딩 윈도우)와 재전송은 **TCP**의 기능. UDP는 이런 신뢰성 기능이 없다. ①③④는 옳다. |
 | 프로토콜-12 | ① | **Slow Start**는 이름과 달리 RTT마다 cwnd가 **지수적(2배)**으로 증가. 혼잡 회피는 선형 증가, 빠른 재전송은 중복 ACK 3개 시 즉시 재전송, Stop-and-Wait는 혼잡 제어 단계가 아닌 단순 ARQ 방식. |
-| 프로토콜-13 | ④ | **netstat -r = 라우팅 테이블**(route print와 동일). -a는 모든 연결·대기 포트, -n은 숫자 형식 표시, -s는 프로토콜별 통계. |
+| 프로토콜-13 | ④ | **arp -a** = ARP 캐시(IP↔MAC) 조회 (`arp -d` 삭제, `arp -s` 정적 등록). netstat -r과 route print는 라우팅 테이블, ipconfig /all은 자신의 IP·MAC·DNS 등 상세 설정. |
 | 프로토콜-14 | ③ | Well-known 포트는 **0~1023**. 1024~49151은 등록(Registered) 포트, 49152~65535는 동적 포트. |
 | 프로토콜-15 | ① | POP3는 **110**번. **143은 IMAP**. SSH 22, SMTP 25, HTTPS 443은 옳다. |
-| 프로토콜-16 | ② | **SNMP(161/162)와 TFTP(69)는 UDP**. FTP·Telnet·SMTP·HTTP·SSH·POP3는 모두 TCP 기반. |
+| 프로토콜-16 | ② | 많은 레코드를 한꺼번에 신뢰성 있게 넘겨야 하는 **영역 전송(AXFR/IXFR)** 은 TCP 53을 쓴다(응답이 너무 큰 경우도 TCP로 재시도). 역방향 조회도 일반 질의이므로 UDP. |
 | 프로토콜-17 | ① | 수동 모드는 서버가 데이터용 임의 포트를 알려주면 **클라이언트가 그 포트로 데이터 연결을 맺는다**. ②는 **능동 모드** 설명, ③은 포트가 반대(21 제어, 20 데이터), ④ FTP는 항상 별도의 데이터 연결을 사용. |
 | 프로토콜-18 | ③ | **IMAP**은 메일을 서버에 보관하고 여러 기기에서 동기화. POP3는 PC로 내려받는(기본적으로 서버에서 삭제) 방식, SMTP는 송신용, MIME은 멀티미디어 메일 형식. |
 | 프로토콜-19 | ① | **MX(Mail eXchanger)** 레코드가 메일 서버 지정. CNAME은 별칭, A는 이름→IPv4, PTR은 IP→이름(역방향). |
 | 프로토콜-20 | ④ | DHCP는 **DORA: Discover → Offer → Request → Ack**. |
-| 프로토콜-21 | ③ | SNMP는 **UDP** 161(요청/응답)·162(Trap)를 사용한다. TCP 연결을 맺지 않는다. ①②④는 옳다. |
+| 프로토콜-21 | ③ | **SetRequest** = 값 변경(설정). GetRequest는 값 조회, GetNextRequest는 MIB 트리의 다음 객체 조회, Trap은 에이전트가 이벤트 발생 시 매니저에게 먼저 알리는 메시지. |
 | 프로토콜-22 | ④ | 다익스트라 알고리즘은 **OSPF 등 링크 상태** 방식. RIP은 **벨만-포드** 알고리즘을 사용하는 거리 벡터 방식. ①②③은 RIP의 올바른 특징. |
 | 프로토콜-23 | ② | **BGP**는 AS 간 라우팅을 담당하는 EGP(경로 벡터 방식, TCP 179). OSPF·RIP·EIGRP는 모두 AS 내부용 IGP. |
 | 프로토콜-24 | ④ | AD는 **작을수록 우선**: 정적 1 < EIGRP 90 < OSPF 110 < RIP 120. 따라서 **정적 경로**가 라우팅 테이블에 등록된다. |
