@@ -7,7 +7,7 @@
 - 불확실도: 모델 확률 1위와 2위의 차이가 작을수록, 또는 탐욕·공포 확률이 0.4~0.7 사이일수록 우선
 - 종목 배정: 실제 글 수 비율의 제곱근에 비례 (대형주를 더 보되 소형주도 남김)
 
-입력 (--base): data/posts/, sample_*_clean.json, sectors.json / (--model) model_v2.joblib
+입력 (--base): data/raw/posts/ (또는 예전 data/posts/), sample_*_clean.json, sectors.json / (--model) model_v2.joblib
 출력 (--dest): sample_active_clean.json, batches/bNN.jsonl (번호는 --start부터, 기본 40), active_manifest.json
   → dest 폴더의 파일을 toss_fear_greed 폴더로 옮기고, 판정 결과를 labels/bNN.jsonl로 두면 train_v2.py가 함께 학습한다
 사용: python make_active_batch.py --base <toss_fear_greed 폴더> --model v2_out/model_v2.joblib --dest v2_out/active --n 5000
@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 import joblib
 import numpy as np
 
-from common import KST, MENTION, load_sectors, make_cleaner, stock_maps, write_json
+from common import KST, MENTION, load_sectors, make_cleaner, posts_path, read_posts, stock_maps, write_json
 
 P = argparse.ArgumentParser()
 P.add_argument("--base", required=True)
@@ -49,35 +49,33 @@ for f in glob.glob(os.path.join(A.base, "sample_*_clean.json")):
 # 종목별 글 수 → 배정량
 counts, files = {}, {}
 for c in SECTOR:
-    p = os.path.join(A.base, "data", "posts", f"{c}.jsonl")
-    if os.path.exists(p):
+    p = posts_path(A.base, c)
+    if p:
         files[c] = p
-        counts[c] = sum(1 for _ in open(p, encoding="utf-8"))
+        counts[c] = sum(1 for _ in read_posts(p))
 w = {c: np.sqrt(n) for c, n in counts.items()}
 quota = {c: max(5, round(A.n * w[c] / sum(w.values()))) for c in w}
 
 
 def text_of(r, n):
-    t = ((r.get("title") or "").strip() + " ") if (r.get("title") or "").strip() else ""
-    return MENTION.sub("@사용자", t + (r.get("body") or ""))[:n]
+    return MENTION.sub("@사용자", r["text"])[:n]
 
 
 picked = []
 for c, path in files.items():
-    rows = [json.loads(l) for l in open(path, encoding="utf-8") if l.strip()]
-    rows = [r for r in rows if (r.get("body") or "").strip() and (c, str(r["post_id"])) not in done
-            and (not A.since or r["published_at"][:10] >= A.since)]
-    parent = {r["post_id"]: r for r in rows if not r.get("parent_post_id")}
+    rows = [r for r in read_posts(path) if r["text"].strip() and (c, str(r["post_id"])) not in done
+            and (not A.since or r["created_at"][:10] >= A.since)]
+    parent = {r["post_id"]: r for r in rows if not r["parent_id"]}
     pool = random.sample(rows, min(len(rows), quota[c] * A.pool_mult))
     if not pool:
         continue
     txt = [clean(text_of(r, 400)) for r in pool]
-    par = [clean(text_of(parent[r["parent_post_id"]], 300)) if r.get("parent_post_id") in parent else "" for r in pool]
+    par = [clean(text_of(parent[r["parent_id"]], 300)) if r["parent_id"] in parent else "" for r in pool]
     if B["kind"] == "base3":
         pr = B["model"].predict_proba(B["vectorizer"].transform(txt))
     else:
-        pr = B["model"].predict_proba(B["featurizer"].transform(txt, par, [bool(r.get("parent_post_id")) for r in pool],
-                                                                 [r.get("execution_side") for r in pool], [r.get("holding") for r in pool]))
+        pr = B["model"].predict_proba(B["featurizer"].transform(txt, par, [bool(r["parent_id"]) for r in pool],
+                                                                 [r["badge"] for r in pool], [r["is_holder"] for r in pool]))
     srt = np.sort(pr, 1)
     margin = srt[:, -1] - srt[:, -2]
     pg, pf = pr[:, CL.index("greed")], pr[:, CL.index("fear")]
@@ -85,11 +83,11 @@ for c, path in files.items():
     score = margin - 0.2 * band                     # 작을수록 먼저
     for j in np.argsort(score)[: quota[c]]:
         r = pool[j]
-        pp = parent.get(r.get("parent_post_id"))
+        pp = parent.get(r["parent_id"])
         picked.append({"sector": SECTOR[c], "stock_code": c, "stock_name": NAME[c], "post_id": r["post_id"],
-                       "is_reply": bool(r.get("parent_post_id")),
-                       "published_at": datetime.fromisoformat(r["published_at"]).astimezone(timezone.utc).isoformat(),
-                       "holding": r.get("holding"), "execution_side": r.get("execution_side"),
+                       "is_reply": bool(r["parent_id"]),
+                       "published_at": datetime.fromisoformat(r["created_at"]).astimezone(timezone.utc).isoformat(),
+                       "holding": "HOLDING" if r["is_holder"] else None, "execution_side": r["badge"],
                        "text": text_of(r, 400), "parent_text": text_of(pp, 300) if pp else None,
                        "_margin": float(margin[j]), "_pred": CL[int(pr[j].argmax())]})
 

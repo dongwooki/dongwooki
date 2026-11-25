@@ -6,6 +6,21 @@
 - 기존 코드와 파일은 고치지 않습니다. 기존 폴더를 `--base`로 읽고 결과는 `--out` 폴더에만 씁니다.
 - 규칙(전처리, 27일 기준 달, 20:00 거래일 경계, 0.7 기준점)은 기존 코드와 같습니다.
 - GPU가 필요 없습니다. 판정 추가(A6·A7)는 Claude Code로 합니다.
+- 글 입력은 류창민 님 최신 코드(11/25, 커밋 64f15aa)와 같은 김정기 수집기 형식 `data/raw/posts/<종목>.csv`를 읽습니다. 예전 `data/posts/<종목>.jsonl`도 읽습니다.
+
+## 류창민 님 코드와의 관계 (11/25 기준)
+
+류창민 님이 11/25 커밋(1a91b88, 28ba19f, 64f15aa)에서 지수·분석 쪽 보완을 직접 반영했습니다. 그래서 v2에서 새로 더하는 것은 주로 **모델(라벨링·분류) 쪽, 보정 집계·행동 축, C1 추가 통제, 예상 범위, 대시보드**입니다.
+
+| 항목 | 류창민 코드에 반영됨 | v2에만 있음 |
+|---|---|---|
+| C1 시가 갭 | 날짜 FE, 지수 갭, 08시 전 글, 출범 전 구간 | 전일 시간외 수익률·미국 증시 통제 (`analysis_v2.py`) |
+| C2~C8, B2·B3·B4·B6·B7 | 반영 (`analysis_extra.py`, `analysis_presentation.py`, `build_index.py`) | 같은 분석을 이중 FE 패키지(linearmodels)로 교차 확인 |
+| C5 예측 비교 | 릿지·HistGB, DM 검정 | LightGBM, 다음 날 시가 방향, **개인 순매수 예상 범위(분위 회귀)** |
+| A1~A5 모델 | 미반영 (0.7 기준 판정, 3분류, 본문만) | 확률 합, 5개 라벨, 부모 글·인증·보유·단어 특징, 확률 보정 |
+| A6·A7 추가 판정 | 미반영 | 헷갈리는 글 묶음, 판정 일치도 |
+| B1 보정 집계, B5 행동 축 | 미반영 (인증·보유는 표본에만) | PACC, 매수 인증 비율·보유 비율·좋아요 합 |
+| 결론 UI | 미반영 | `ui/dashboard.html` |
 
 ## 바로 돌려 보기 (합성 데이터)
 
@@ -14,7 +29,7 @@ pip install -r requirements.txt
 ./run_all.sh --synthetic synthetic_run     # 합성 데이터 생성 → 전체 실행, 약 3분
 ```
 
-`make_synthetic.py`는 기존 입력과 같은 형식의 가짜 데이터를 만듭니다(15종목, 327거래일, 글 27만 건).
+`make_synthetic.py`는 기존 입력과 같은 형식(글은 김정기 수집기 CSV)의 가짜 데이터를 만듭니다(15종목, 327거래일, 글 27만 건).
 분석이 찾아내야 할 관계를 일부러 심어 두었습니다. 예를 들어 밤 글과 시가 갭이 미국 증시·전일 시간외 가격을 함께 반영하게 해서, 통제하지 않으면 밤 글이 갭을 예측하는 것처럼 보이게 했습니다.
 실행 예시는 `reports/synthetic_*.md`에 있습니다.
 
@@ -29,14 +44,14 @@ pip install -r requirements.txt
 | 파일 | 만드는 기존 코드 | 쓰는 v2 단계 |
 |---|---|---|
 | `sample_30k_clean.json`, `sample_prev12_clean.json`, `labels/` | make_sample.py, make_batches.py, LLM 판정 | train_v2 |
-| `data/posts/<종목>.jsonl` | 수집 | apply_v2, make_active_batch |
+| `data/raw/posts/<종목>.csv` (김정기 수집기 형식) | 수집 | apply_v2, make_active_batch |
 | `trading_days.csv`, `ohlcv.json` | fetch_krx.py | build_index_v2 이후 전부 |
 | `krx_index.json`, `krx_investor.json`, `krx_short.json` | fetch_krx_login.py | analysis_v2, predict_v2 |
 | `us_overnight.csv` (date, us_ret) | **새로 필요**. 전날 밤 미국 지수 수익률(%) | C1 통제 (없으면 그 열만 빠짐) |
 | `nxt_after.json` ({종목: {날짜: 그날 15:30~20:00 수익률 %}}) | **새로 필요**. 대체거래소 시간외 | C1 통제 (없으면 그 열만 빠짐) |
 | `rotation_keywords.json` | rotation_keywords.py | 대시보드 대표 단어 (선택) |
 
-원문(`data/posts/`)을 넘기기 어려우면, 원문이 있는 PC에서 `apply_v2.py`까지 돌리고 `v2_out/apply_out_v2/`만 넘겨도 3단계부터 진행됩니다.
+원문(`data/raw/posts/`)을 넘기기 어려우면, 원문이 있는 PC에서 `apply_v2.py`까지 돌리고 `v2_out/apply_out_v2/`만 넘겨도 3단계부터 진행됩니다.
 `build_index_v2.py --apply <기존 apply_out2 폴더>`로 기존 집계에도 지수·분석을 바로 적용할 수 있습니다. 이때 확률·행동 열이 없으니 판정 수를 대신 씁니다.
 
 ## 파일과 보완 항목

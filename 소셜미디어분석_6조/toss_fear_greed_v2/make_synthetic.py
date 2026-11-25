@@ -9,11 +9,12 @@
 - 의견이 갈린 날(쏠림이 낮은 날) 다음 날 거래량이 늘어난다
 - 탐욕 글일수록 매도 인증이 많다 (말과 행동의 괴리)
 
-출력 (--out 폴더): sectors.json, trading_days.csv, data/posts/<종목>.jsonl, sample_30k_clean.json, sample_prev12_clean.json,
+출력 (--out 폴더): sectors.json, trading_days.csv, data/raw/posts/<종목>.csv (김정기 수집기 형식), sample_30k_clean.json, sample_prev12_clean.json,
 labels/bNN.jsonl, ohlcv.json, closes.json, krx_index.json, krx_investor.json, krx_short.json, us_overnight.csv, nxt_after.json, TRUTH.json
 사용: python make_synthetic.py --out synthetic --sectors 5 --scale 1.0
 """
 import argparse
+import csv
 import json
 import math
 import os
@@ -22,7 +23,7 @@ from datetime import date, datetime, timedelta
 
 import numpy as np
 
-from common import KST, NXT_START, load_sectors, month_of, write_json
+from common import KST, NXT_START, load_sectors, month_of, read_posts, write_json
 
 P = argparse.ArgumentParser()
 P.add_argument("--out", default="synthetic")
@@ -35,7 +36,7 @@ A = P.parse_args()
 rng = np.random.default_rng(A.seed)
 random.seed(A.seed)
 OUT = A.out
-os.makedirs(f"{OUT}/data/posts", exist_ok=True)
+os.makedirs(f"{OUT}/data/raw/posts", exist_ok=True)
 os.makedirs(f"{OUT}/labels", exist_ok=True)
 
 ALL = load_sectors(os.path.dirname(os.path.abspath(__file__)))
@@ -168,18 +169,19 @@ for c in CODES:
                 side = None
                 if random.random() < 0.10:
                     side = "BUY" if random.random() < 0.5 - 0.3 * s else "SELL"
-                rows.append({"post_id": str(pid), "parent_post_id": parent[0] if parent else None,
-                             "published_at": when.isoformat(timespec="seconds"),
-                             "holding": "HOLDING" if random.random() < 0.5 else None, "execution_side": side,
-                             "title": "", "body": body})
+                rows.append({"stock_id": c, "post_id": str(pid), "parent_id": parent[0] if parent else "", "text": body,
+                             "created_at": when.isoformat(timespec="seconds"), "collected_at": "", "source": "synthetic",
+                             "badge": side or "", "like_count": int(rng.poisson(1.5)), "reply_count": 0,
+                             "is_holder": 1 if random.random() < 0.5 else 0})
                 true_label[(c, str(pid))] = lab
                 if not parent:
                     recent.append((str(pid), lab))
                     recent = recent[-30:]
-    rows.sort(key=lambda r: r["published_at"])
-    with open(f"{OUT}/data/posts/{c}.jsonl", "w", encoding="utf-8") as f:
-        for r in rows:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    rows.sort(key=lambda r: r["created_at"])
+    with open(f"{OUT}/data/raw/posts/{c}.csv", "w", encoding="utf-8", newline="") as f:   # 김정기 수집기 형식 (11개 열)
+        w = csv.DictWriter(f, fieldnames=list(rows[0]))
+        w.writeheader()
+        w.writerows(rows)
     n_total += len(rows)
     print(c, NAME[c], f"{len(rows):,}건", flush=True)
 
@@ -197,21 +199,21 @@ def sample(months, pfx, fname, start_batch):
     out = []
     n = 0
     for c in CODES:
-        rows = [json.loads(l) for l in open(f"{OUT}/data/posts/{c}.jsonl", encoding="utf-8")]
-        parent = {r["post_id"]: r for r in rows if not r["parent_post_id"]}
+        rows = list(read_posts(f"{OUT}/data/raw/posts/{c}.csv"))
+        parent = {r["post_id"]: r for r in rows if not r["parent_id"]}
         bym = {}
         for r in rows:
-            bym.setdefault(month_of(r["published_at"]), []).append(r)
+            bym.setdefault(month_of(r["created_at"]), []).append(r)
         for m in months:
             pool = bym.get(m, [])
             for r in random.sample(pool, min(56, len(pool))):
                 n += 1
-                pp = parent.get(r["parent_post_id"])
+                pp = parent.get(r["parent_id"])
                 out.append({"id": f"{pfx}{n:05d}", "sector": SECTOR[c], "stock_code": c, "stock_name": NAME[c],
-                            "post_id": r["post_id"], "is_reply": bool(r["parent_post_id"]),
-                            "published_at": datetime.fromisoformat(r["published_at"]).astimezone().isoformat(),
-                            "holding": r["holding"], "execution_side": r["execution_side"],
-                            "text": r["body"][:400], "parent_text": pp["body"][:300] if pp else None,
+                            "post_id": r["post_id"], "is_reply": bool(r["parent_id"]),
+                            "published_at": datetime.fromisoformat(r["created_at"]).astimezone().isoformat(),
+                            "holding": "HOLDING" if r["is_holder"] else None, "execution_side": r["badge"],
+                            "text": r["text"][:400], "parent_text": pp["text"][:300] if pp else None,
                             "_true": true_label[(c, r["post_id"])]})
     random.shuffle(out)
     for i in range(0, len(out), 1000):

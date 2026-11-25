@@ -2,7 +2,7 @@
 기준선은 류창민 train_final.py와 같은 모델(본문 글자 조각 TF-IDF + 로지스틱 회귀, 탐욕/공포/그 외 3분류, 0.7 기준)이다.
 같은 채점 묶음으로 v2 후보를 비교하고, 고른 모델을 전체 판정으로 다시 학습해 저장한다.
 
-입력 (--base): sample_*_clean.json (sample_30k, sample_prev12, 추가 판정 sample_active), labels/bNN.jsonl, sectors.json, data/posts/(있으면 종목별 글 수 가중에 사용)
+입력 (--base): sample_*_clean.json (sample_30k, sample_prev12, 추가 판정 sample_active), labels/bNN.jsonl, sectors.json, data/raw/posts/(있으면 종목별 글 수 가중에 사용)
 출력 (--out): model_v2.joblib, quantify.json, reports/train_report.{json,md}
 사용: python train_v2.py --base <toss_fear_greed 폴더> --out v2_out [--holdout "b17-b22"] [--choose v2_lr5_cal]
 """
@@ -21,7 +21,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.svm import LinearSVC
 
-from common import LABELS5, batches, load_sectors, make_cleaner, month_of, write_json
+from common import LABELS5, batches, load_sectors, make_cleaner, month_of, posts_path, write_json
 from featurize_v2 import Featurizer
 
 P = argparse.ArgumentParser()
@@ -84,11 +84,10 @@ stock_ho = np.array([r["stock_code"] for r in HO])
 
 # 종목별 실제 글 수 (글이 몰린 종목의 성능을 따로 보기 위해)
 vol = {}
-pdir = os.path.join(A.base, "data", "posts")
-if os.path.isdir(pdir):
-    for f in os.listdir(pdir):
-        if f.endswith(".jsonl"):
-            vol[f[:-6]] = sum(1 for _ in open(os.path.join(pdir, f), encoding="utf-8"))
+for c in {r["stock_code"] for r in TR + HO}:
+    p = posts_path(A.base, c)
+    if p:
+        vol[c] = sum(1 for _ in open(p, encoding="utf-8"))
 
 # ---------------- 후보 모델 ----------------
 Xtr_c, Ptr, Rtr, Str, Htr = cols(TR)

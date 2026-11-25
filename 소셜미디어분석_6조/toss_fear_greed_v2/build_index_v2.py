@@ -58,7 +58,9 @@ if "p_greed" not in x:                       # 기존 apply_out2 형식이면 �
     x["p_greed"], x["p_fear"], x["p_irrelevant"] = x.n_greed, x.n_fear, 0.0
     for c in ("n_reply", "n_buy", "n_sell", "n_holding"):
         x[c] = 0
-VAL = ["n_posts", "n_reply", "n_buy", "n_sell", "n_holding", "p_greed", "p_fear", "p_irrelevant", "n_greed", "n_fear"]
+if "n_likes" not in x:
+    x["n_likes"] = 0
+VAL = ["n_posts", "n_reply", "n_buy", "n_sell", "n_holding", "n_likes", "p_greed", "p_fear", "p_irrelevant", "n_greed", "n_fear"]
 day = x.groupby(["code", "date"])[VAL].sum()
 part = x.groupby(["code", "date", "part"])[["n_posts", "p_greed", "p_fear", "p_irrelevant"]].sum().unstack("part").fillna(0)
 part.columns = [f"{p}_{c}" for c, p in part.columns]

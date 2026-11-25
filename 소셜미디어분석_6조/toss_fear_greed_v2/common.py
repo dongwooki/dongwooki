@@ -87,6 +87,34 @@ def batches(spec, label_dir=None):
     return out
 
 
+def posts_path(base, code):
+    """글 파일 위치. 새 형식(김정기 수집기 CSV) → 예전 형식(JSONL) 순서로 찾는다."""
+    for p in (os.path.join(base, "data", "raw", "posts", f"{code}.csv"), os.path.join(base, "data", "posts", f"{code}.jsonl")):
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def read_posts(path):
+    """글 파일을 읽어 같은 키로 돌려준다: post_id, parent_id, created_at, text, badge(BUY/SELL/None), is_holder(bool), like_count.
+    새 형식: stock_id, post_id, parent_id, text, created_at, collected_at, source, badge, like_count, reply_count, is_holder (류창민 make_sample.py 설명)
+    예전 형식: post_id, parent_post_id, published_at, holding, execution_side, title, body"""
+    import csv
+    if path.endswith(".csv"):
+        for r in csv.DictReader(open(path, encoding="utf-8")):
+            yield {"post_id": r["post_id"], "parent_id": r.get("parent_id") or None, "created_at": r["created_at"],
+                   "text": r.get("text") or "", "badge": r.get("badge") or None, "is_holder": r.get("is_holder") == "1",
+                   "like_count": int(float(r.get("like_count") or 0))}
+    else:
+        for line in open(path, encoding="utf-8"):
+            if line.strip():
+                r = json.loads(line)
+                title = (r.get("title") or "").strip()
+                yield {"post_id": str(r["post_id"]), "parent_id": r.get("parent_post_id"), "created_at": r["published_at"],
+                       "text": ((title + " ") if title else "") + (r.get("body") or ""), "badge": r.get("execution_side"),
+                       "is_holder": bool(r.get("holding")), "like_count": int(r.get("like_count") or 0)}
+
+
 def write_json(path, obj):
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:

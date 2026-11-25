@@ -2,10 +2,10 @@
 류창민 apply_all2.py와 같은 형식에 열을 더한다. 원문은 저장하지 않는다.
 - 확률 합(p_greed, p_fear, p_irrelevant ...): 0.7 기준으로 자르지 않고 확률을 그대로 더한 값 (A1)
 - n_greed, n_fear: 기존과 같은 0.7 기준 판정 수 (비교용)
-- 행동 열: 대댓글 수, 매수·매도 인증 수, 보유 표시 수 (B5)
+- 행동 열: 대댓글 수, 매수·매도 인증 수, 보유 표시 수, 좋아요 합 (B5)
 - 대댓글은 같은 종목 파일에서 부모 원글 본문을 찾아 붙인다 (A4)
 
-입력 (--base): data/posts/<종목>.jsonl, sectors.json / (--model) model_v2.joblib
+입력 (--base): data/raw/posts/<종목>.csv (김정기 수집기 형식, 없으면 예전 data/posts/<종목>.jsonl), sectors.json / (--model) model_v2.joblib
 출력 (--out): apply_out_v2/<종목>_<YYYY-MM>.csv  (한 달 = 전월 27일 ~ 당월 27일 전, 이미 있으면 건너뜀)
 사용: python apply_v2.py --base <toss_fear_greed 폴더> --model v2_out/model_v2.joblib --out v2_out [--codes 005930 000660]
 """
@@ -20,7 +20,7 @@ from datetime import datetime
 import joblib
 import numpy as np
 
-from common import KST, load_sectors, make_cleaner, slot_of
+from common import KST, load_sectors, make_cleaner, posts_path, read_posts, slot_of
 
 P = argparse.ArgumentParser()
 P.add_argument("--base", required=True)
@@ -39,7 +39,7 @@ CODES = [c for v in SECT.values() for c in v]
 OUT = os.path.join(A.out, "apply_out_v2")
 os.makedirs(OUT, exist_ok=True)
 COLS = ["slot_kst", "n_posts", "n_reply", "n_buy", "n_sell", "n_holding",
-        "p_greed", "p_fear", "p_neutral", "p_irrelevant", "p_unsure", "n_greed", "n_fear", "n_greed_argmax", "n_fear_argmax"]
+        "p_greed", "p_fear", "p_neutral", "p_irrelevant", "p_unsure", "n_greed", "n_fear", "n_greed_argmax", "n_fear_argmax", "n_likes"]
 
 
 def proba(rows):
@@ -62,25 +62,20 @@ total, t0 = 0, time.time()
 for code in CODES:
     if A.codes and code not in A.codes:
         continue
-    path = os.path.join(A.base, "data", "posts", f"{code}.jsonl")
-    if not os.path.exists(path):
+    path = posts_path(A.base, code)
+    if not path:
         print(code, "입력 없음, 건너뜀")
         continue
     seen, parent, by_month = set(), {}, defaultdict(list)
-    for line in open(path, encoding="utf-8"):
-        if not line.strip():
-            continue
-        r = json.loads(line)
-        if r["post_id"] in seen or not (r.get("body") or "").strip():
+    for r in read_posts(path):
+        if r["post_id"] in seen or not r["text"].strip():
             continue
         seen.add(r["post_id"])
-        title = (r.get("title") or "").strip()
-        text = ((title + " ") if title else "") + r["body"]
-        if not r.get("parent_post_id"):
-            parent[r["post_id"]] = text
-        t = datetime.fromisoformat(r["published_at"]).astimezone(KST)
-        by_month[month_key(t)].append([slot_of(t), text[:400], r.get("parent_post_id"), bool(r.get("parent_post_id")),
-                                       r.get("execution_side"), r.get("holding")])
+        if not r["parent_id"]:
+            parent[r["post_id"]] = r["text"]
+        t = datetime.fromisoformat(r["created_at"]).astimezone(KST)
+        by_month[month_key(t)].append([slot_of(t), r["text"][:400], r["parent_id"], bool(r["parent_id"]),
+                                       r["badge"], r["is_holder"], r["like_count"]])
     for ym in sorted(by_month):
         out = os.path.join(OUT, f"{code}_{ym}.csv")
         if os.path.exists(out):
@@ -111,6 +106,7 @@ for code in CODES:
                 g[11] += pf[j] >= THR
                 g[12] += CL[am[j]] == "greed"
                 g[13] += CL[am[j]] == "fear"
+                g[14] += r[6]
         with open(out + ".tmp", "w", newline="") as f:
             w = csv.writer(f)
             w.writerow(COLS)
